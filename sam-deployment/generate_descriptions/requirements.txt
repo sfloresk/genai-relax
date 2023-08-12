@@ -1,0 +1,13 @@
+awscli @ file:///var/task/installers/awscli-1.27.162-py3-none-any.whl#sha256=57b9c280e10a58e43b208ecad02a824aed15f42ba79613c2d4ccc93b75d9f4a2
+boto3 @ file:///var/task/installers/boto3-1.26.162-py3-none-any.whl#sha256=eee793a18849d1c597d8fe97d3a9a1a12a976be5a1aafbe6faebe25036e2cc7b
+botocore @ file:///var/task/installers/botocore-1.29.162-py3-none-any.whl#sha256=00effd4cb8c0c8718ecae0eb87c3837ad6f841e28a46a2cbf9c09bfdb62a53c5
+colorama==0.4.4
+docutils==0.16
+jmespath==1.0.1
+pyasn1==0.5.0
+python-dateutil==2.8.2
+PyYAML==5.4.1
+rsa==4.7.2
+s3transfer==0.6.1
+six==1.16.0
+urllib3==1.26.16

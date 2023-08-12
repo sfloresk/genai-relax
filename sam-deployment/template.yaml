@@ -1,0 +1,178 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python3.9
+
+  Sample SAM Template for genai-relax
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 128
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'content-type'"
+      AllowOrigin: "'*'"
+        
+        
+Parameters:
+  RoleArnParameter:
+    Type: String
+    Description: "Role to be used to access Amazon Bedrock"
+
+Resources:
+  GenerateDescriptionsFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Environment:
+          Variables:
+            ROLE_ARN: 
+              Ref: RoleArnParameter
+            DYNAMODB_TABLE:
+              Ref: GenAIMetadataTable
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        DescriptionApiCall:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /description
+            Method: post
+      Policies:
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:PutItem
+            Resource:
+              - !Sub 
+                - 'arn:aws:dynamodb:*:*:table/${Table}'
+                - { Table: !Ref GenAIMetadataTable }
+          
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource: 
+              - Ref: RoleArnParameter
+              
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource:
+              - "*" 
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./generate_descriptions
+      DockerTag: python3.9-v1
+  
+  GenerateImageFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Environment:
+          Variables:
+            ROLE_ARN: 
+              Ref: RoleArnParameter
+            DYNAMODB_TABLE:
+              Ref: GenAIMetadataTable
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        ImagenApiCall:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /image
+            Method: post
+      Policies:
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:Query
+            Resource:
+              - !Sub 
+                - 'arn:aws:dynamodb:*:*:table/${Table}'
+                - { Table: !Ref GenAIMetadataTable }
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource: 
+              - Ref: RoleArnParameter
+              
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource:
+              - "*" 
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./generate_image
+      DockerTag: python3.9-v1
+      
+  GenerateAudioFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DYNAMODB_TABLE:
+            Ref: GenAIMetadataTable
+      Events:
+        AdioApiCall:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /audio
+            Method: post
+      Policies:
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:Query
+            Resource:
+            - !Sub 
+              - 'arn:aws:dynamodb:*:*:table/${Table}'
+              - { Table: !Ref GenAIMetadataTable }
+          - Effect: Allow
+            Action:
+              - polly:SynthesizeSpeech
+            Resource: 
+              - "*"
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource:
+              - "*" 
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./generate_audio
+      DockerTag: python3.9-v1
+      
+      
+  GenAIMetadataTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: GenAIMetadata
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  HelloWorldApi:
+    Description: "API Gateway endpoint URL for Prod sate"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
