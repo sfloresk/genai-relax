@@ -25,7 +25,3 @@ npm run dev
 ```sh
 npm run build
 ```
-
-### Issues
-
-Please open bugs for any questions or issues.
