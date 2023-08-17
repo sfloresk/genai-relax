@@ -10,7 +10,7 @@ The solution has two main components:
 
 ## Use cases
 
-The application is able to create positive image descriptions for topics selected by the users (the example UI goes over three different topics: High Views, Animals and Sport Venues), this descriptions are then processed one by one to generate an image and audio representations. 
+The application is able to create positive image descriptions for topics selected by the users (the example UI goes over three different topics: High Views, Animals and Sport Venues), these descriptions are then processed one by one to generate an image and audio representations. 
 
 Uses can go from helping users to relaxing and reduce anxiety (concentrating on the images being displayed), to creating memory games (which can be used to evaluate cognitive decline) and even for education (e.g., showing geometric images and asking children to identify which shape is in the screen). An audio description plays per image as an example of how to make a website more accessible.
 
