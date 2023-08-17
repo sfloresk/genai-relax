@@ -2,7 +2,7 @@
 
 A GenAI serverless application example built with Amazon API Gateway, Amazon Lambda, Amazon DynamoDB and Amazon Bedrock.
 
-The solution has to main components:
+The solution has two main components:
 
 1. relaxing-ui: a simple web interface written in VueJS.
 
