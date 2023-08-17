@@ -1,6 +1,6 @@
 # Gen AI Relax 
 
-A GenAI serverless application example built with API Gateway, Lambda, DynamoDB and Bedrock.
+A GenAI serverless application example built with Amazon API Gateway, Amazon Lambda, Amazon DynamoDB and Amazon Bedrock.
 
 The solution has to main components:
 
